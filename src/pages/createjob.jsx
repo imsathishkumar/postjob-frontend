@@ -1,9 +1,10 @@
 import React ,{ useState } from 'react';
-import { Navigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import baseUrl from "../url";
 import axios from 'axios';
 
 function CreateJob(props) {
+  const navigate = useNavigate();
   const [data, setData] = useState({ title: "", description: "" });
   const token = localStorage.getItem("token");
 
@@ -17,7 +18,7 @@ function CreateJob(props) {
       console.log(data);
       const url =baseUrl + "/create-job";
       const res = await axios.post(url, data ,{ headers: { "x-auth-token": token } });
-      <Navigate to="/dashboard" />
+      navigate("/dashboard");
     } catch (error) {
       if (
         error.response &&
