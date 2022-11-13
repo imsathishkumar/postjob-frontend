@@ -6,16 +6,39 @@ import baseUrl from "../url";
 function JobList(props) {
   const [jobs, setJobs] = useState([]);
   const token = localStorage.getItem("token");
+  const [filteredlist, setFilteredList] = useState([])
 
   useEffect(() => {
     async function getData() {
       const url = baseUrl + "/show-job";
       const res = await axios.get(url, { headers: { "x-auth-token": token } });
       setJobs([...res.data.job]);
-      console.log("ssk", res.data);
+      setFilteredList([...res.data.job.slice(0,10)])
     }
     getData();
   }, []);
+
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const handleScroll = () => {
+      const position = window.pageYOffset;
+      setScrollPosition(position);
+  };
+
+  useEffect(() => {
+      window.addEventListener('scroll', handleScroll);
+
+      return () => {
+          window.removeEventListener('scroll', handleScroll);
+      };
+  }, []);
+
+  useEffect(() => {
+    const bottom = Math.ceil(window.innerHeight + window.scrollY) >= document.body.scrollHeight
+    if (bottom) {
+      setFilteredList([...filteredlist , ...jobs.slice(filteredlist.length,filteredlist.length+10)])
+    }
+  }, [scrollPosition])
+
   async function handleApply(id ,e) {
     try {
       console.log(id);
@@ -27,14 +50,16 @@ function JobList(props) {
       console.log(error);
     }
   }
+
+
   return (
     <div className="p-10 flex flex-col gap-10">
       <div className="flex justify-between px-10">
         <h1 className="text-2xl font-bold">Opening Jobs</h1>
       </div>
-      {jobs.map((element) => {
+      {filteredlist.map((element) => {
         return (
-          <div className="flex flex-col shadow-md rounded p-10">
+          <div key={element._id} className="flex flex-col shadow-md rounded p-10">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-left font-bold">{element.title.toUpperCase()}</p>

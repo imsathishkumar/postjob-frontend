@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import Topbar from './topbar';
 
 function AppLayout(props) {
   const location = useLocation();
@@ -8,10 +9,13 @@ function AppLayout(props) {
     "/signup",
   ];
   if(urlToAuthProcess.indexOf(location.pathname) > -1){
-    <section>{props.children}</section>
+    return <section>{props.children}</section>
   }
   return (
-    <section className='app-layout'>{props.children}</section>
+    <React.Fragment>
+      <Topbar/>
+      <section className='app-layout container mx-auto'>{props.children}</section>
+    </React.Fragment>
   );
 }
 
